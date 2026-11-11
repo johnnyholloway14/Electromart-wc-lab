@@ -91,6 +91,38 @@ tr.total th, tr.total td {
 details summary { cursor: pointer; font-weight: 600; }
 details[open] summary { margin-bottom: 12px; }
 
+.top-note { margin: 0 0 12px; }
+
+.buttons { display: flex; gap: 8px; margin-bottom: 16px; }
+.buttons button {
+  flex: 1;
+  font: inherit;
+  font-weight: 600;
+  padding: 10px 8px;
+  border-radius: 8px;
+  border: 1px solid var(--accent);
+  background: transparent;
+  color: var(--accent);
+  cursor: pointer;
+}
+.buttons button:active { background: var(--accent); color: var(--card); }
+
+.slider {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: baseline;
+  margin-bottom: 12px;
+}
+.slider label { font-weight: 700; }
+.slider .hint { font-weight: 400; color: var(--muted); font-size: 0.85rem; }
+.slider output { font-variant-numeric: tabular-nums; font-weight: 600; }
+.slider input[type="range"] {
+  grid-column: 1 / -1;
+  width: 100%;
+  margin: 6px 0 0;
+  accent-color: var(--accent);
+}
+
 .status { color: var(--muted); }
 .status.error { color: var(--error); font-weight: 600; }
 

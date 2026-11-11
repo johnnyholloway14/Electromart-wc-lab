@@ -46,6 +46,65 @@
       <ul id="cash-checks" class="checks"></ul>
     </section>
 
+    <section id="levers-section" class="card" hidden>
+      <h2>Levers</h2>
+      <p class="note top-note">Move a slider to change the days. Revenue and COGS stay at their Before values.</p>
+
+      <div class="buttons">
+        <button type="button" id="set-before">Set to Before</button>
+        <button type="button" id="set-after">Set to After</button>
+      </div>
+
+      <div class="slider">
+        <label for="dio-slider">DIO <span class="hint">inventory days</span></label>
+        <output id="dio-value" for="dio-slider"></output>
+        <input type="range" id="dio-slider" min="0" step="any">
+      </div>
+      <div class="slider">
+        <label for="dso-slider">DSO <span class="hint">collection days</span></label>
+        <output id="dso-value" for="dso-slider"></output>
+        <input type="range" id="dso-slider" min="0" step="any">
+      </div>
+      <div class="slider">
+        <label for="dpo-slider">DPO <span class="hint">payment days</span></label>
+        <output id="dpo-value" for="dpo-slider"></output>
+        <input type="range" id="dpo-slider" min="0" step="any">
+      </div>
+
+      <h3>1. Cash conversion cycle</h3>
+      <table class="num">
+        <thead>
+          <tr><th scope="col">Measure</th><th scope="col">Before</th><th scope="col">Levers</th><th scope="col">Change</th></tr>
+        </thead>
+        <tbody id="lever-days-body"></tbody>
+      </table>
+
+      <h3>2–3. Balances and cash freed</h3>
+      <table class="num">
+        <thead>
+          <tr><th scope="col">Balance</th><th scope="col">Before</th><th scope="col">Implied</th><th scope="col">Cash freed</th></tr>
+        </thead>
+        <tbody id="lever-cash-body"></tbody>
+        <tfoot id="lever-cash-foot"></tfoot>
+      </table>
+      <p class="note">Implied balance = days × annual COGS (or revenue) / <span class="diy"></span>. Cash freed compares it with Before.</p>
+
+      <h3>4. Interest saved on the bank line</h3>
+      <table class="num">
+        <tbody id="lever-interest-body"></tbody>
+      </table>
+      <p class="note">Assumes every freed dollar pays down the bank line, up to its Before balance. The case's After balance sheet shows ElectroMart kept part of the cash instead. A negative number means extra borrowing and extra interest.</p>
+
+      <h3>5. Paying suppliers</h3>
+      <table class="num">
+        <thead>
+          <tr><th scope="col">Measure</th><th scope="col">Before</th><th scope="col">Levers</th></tr>
+        </thead>
+        <tbody id="lever-supplier-body"></tbody>
+      </table>
+      <p class="note" id="terms-note"></p>
+    </section>
+
     <details id="data-section" class="card" hidden>
       <summary>Data read from the CSV files</summary>
       <table class="num">

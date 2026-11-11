@@ -60,7 +60,10 @@
     accounts_receivable: "asset",
     inventory: "asset",
     accounts_payable: "liability_or_equity",
+    notes_payable: "liability_or_equity",
   };
+
+  const REQUIRED_ASSUMPTIONS = ["days_in_year", "bank_rate", "supplier_discount", "discount_days", "net_days"];
 
   // Rows from electromart.csv -> { before: {item: value}, after: {...}, section: {item: section} }
   function statementsFromRows(rows) {
@@ -86,7 +89,13 @@
   function assumptionsFromRows(rows) {
     const out = {};
     rows.forEach(r => { if (r.assumption) out[r.assumption] = toNumber(r.value, r.assumption); });
+    REQUIRED_ASSUMPTIONS.forEach(name => {
+      if (!(name in out)) throw new Error("assumptions.csv has no \"" + name + "\" line.");
+    });
     if (!(out.days_in_year > 0)) throw new Error("assumptions.csv needs a positive days_in_year.");
+    if (!(out.supplier_discount >= 0 && out.supplier_discount < 1)) {
+      throw new Error("supplier_discount must be a decimal between 0 and 1, like 0.02.");
+    }
     return out;
   }
 
@@ -151,6 +160,57 @@
     };
   }
 
+  // ---------- Levers ----------
+
+  // Interest saved each year if the freed cash pays down the bank line.
+  // Only as much as the Before bank line can be paid down. If cash freed is negative,
+  // ElectroMart borrows more, and the extra interest comes back as a negative saving.
+  function interestSaved(cashFreedTotal, bankLineBefore, bankRate) {
+    const paidDown = cashFreedTotal > 0 ? Math.min(cashFreedTotal, bankLineBefore) : cashFreedTotal;
+    return { paidDown, saved: paidDown * bankRate };
+  }
+
+  // Days paid after the net due date. Never less than zero.
+  function daysPastDue(dpoDays, netDays) { return Math.max(0, dpoDays - netDays); }
+
+  // Nominal annual cost of skipping the supplier discount:
+  //   d / (1 − d) × days in year / (days paid − discount days).
+  // If DPO is within the discount period, ElectroMart takes the discount, so there is no cost.
+  function discountCost(dpoDays, discount, discountDays, daysInYear) {
+    if (dpoDays <= discountDays) return { takesDiscount: true, cost: 0 };
+    return {
+      takesDiscount: false,
+      cost: discount / (1 - discount) * daysInYear / (dpoDays - discountDays),
+    };
+  }
+
+  // What a set of lever days implies, holding revenue and COGS at their Before values.
+  //   levers = { dio, dso, dpo }
+  function leverResults(before, assumptions, levers) {
+    const days = assumptions.days_in_year;
+    const balances = {
+      inventory: levers.dio * before.cogs / days,
+      receivables: levers.dso * before.revenue / days,
+      payables: levers.dpo * before.cogs / days,
+    };
+    const freed = {
+      inventory: before.inventory - balances.inventory,
+      receivables: before.accounts_receivable - balances.receivables,
+      payables: balances.payables - before.accounts_payable,
+    };
+    const totalFreed = freed.inventory + freed.receivables + freed.payables;
+    return {
+      ccc: ccc(levers.dio, levers.dso, levers.dpo),
+      balances,
+      freed,
+      totalFreed,
+      bankLineBefore: before.notes_payable,
+      interest: interestSaved(totalFreed, before.notes_payable, assumptions.bank_rate),
+      daysPastDue: daysPastDue(levers.dpo, assumptions.net_days),
+      discount: discountCost(levers.dpo, assumptions.supplier_discount, assumptions.discount_days, days),
+    };
+  }
+
   // Everything the page needs, from the two CSV texts.
   function analyze(statementsCSV, assumptionsCSV) {
     const st = statementsFromRows(parseCSV(statementsCSV));
@@ -167,7 +227,8 @@
 
   const api = {
     parseCSV, statementsFromRows, assumptionsFromRows,
-    dio, dso, dpo, ccc, periodDays, cashFreed, analyze,
+    dio, dso, dpo, ccc, periodDays, cashFreed,
+    interestSaved, daysPastDue, discountCost, leverResults, analyze,
   };
 
   if (typeof module !== "undefined" && module.exports) module.exports = api;
