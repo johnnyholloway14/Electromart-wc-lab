@@ -227,4 +227,14 @@
   }
 
   start();
+
+  // Register the service worker so the app installs and works offline.
+  // A relative path keeps it inside this repository's folder on GitHub Pages.
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("sw.js").catch(err => {
+        console.warn("Service worker not registered:", err);
+      });
+    });
+  }
 })();
