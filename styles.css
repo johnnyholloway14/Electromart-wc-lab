@@ -1,0 +1,103 @@
+:root {
+  --bg: #f6f7f9;
+  --card: #ffffff;
+  --text: #1c2430;
+  --muted: #5b6676;
+  --line: #dde2e8;
+  --accent: #b3122e;
+  --total-bg: #f1f3f6;
+  --error: #b00020;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #12161c;
+    --card: #1b2129;
+    --text: #e7ebf0;
+    --muted: #9aa5b4;
+    --line: #2d3540;
+    --accent: #ff6b81;
+    --total-bg: #232a34;
+    --error: #ff8a80;
+  }
+}
+
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size: 16px;
+  line-height: 1.45;
+}
+
+.top, main {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+.top { padding-top: 20px; }
+
+h1 { margin: 0; font-size: 1.5rem; color: var(--accent); }
+h2 { margin: 0 0 12px; font-size: 1.15rem; }
+h3 { margin: 16px 0 6px; font-size: 1rem; }
+
+.sub { margin: 4px 0 16px; color: var(--muted); }
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+
+th, td {
+  padding: 8px 4px;
+  border-bottom: 1px solid var(--line);
+  text-align: right;
+  white-space: nowrap;
+}
+
+th:first-child, td:first-child { text-align: left; white-space: normal; }
+thead th { font-size: 0.85rem; color: var(--muted); font-weight: 600; }
+tbody th { font-weight: 500; }
+
+tr.total th, tr.total td {
+  font-weight: 700;
+  background: var(--total-bg);
+}
+
+.note { margin: 10px 0 0; font-size: 0.9rem; color: var(--muted); }
+
+.defs { margin: 12px 0 0; font-size: 0.9rem; }
+.defs dt { font-weight: 700; float: left; width: 3em; }
+.defs dd { margin: 0 0 4px 3em; color: var(--muted); }
+
+.checks { margin: 0; padding-left: 18px; font-size: 0.9rem; font-variant-numeric: tabular-nums; }
+.checks li { margin-bottom: 4px; }
+
+details summary { cursor: pointer; font-weight: 600; }
+details[open] summary { margin-bottom: 12px; }
+
+.status { color: var(--muted); }
+.status.error { color: var(--error); font-weight: 600; }
+
+/* Phones: tighten the tables so four columns fit at 375 px without sideways scrolling. */
+@media (max-width: 420px) {
+  body { font-size: 15px; }
+  .card { padding: 12px; }
+  th, td { padding: 7px 2px; font-size: 0.9rem; }
+  thead th { font-size: 0.78rem; }
+}
