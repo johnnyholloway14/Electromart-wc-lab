@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ElectroMart CCC</title>
+  <meta name="description" content="Cash conversion cycle calculator for the ElectroMart working capital case.">
+  <meta name="theme-color" content="#1f3864">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="ElectroMart CCC">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="top">
+    <h1>ElectroMart CCC</h1>
+    <p class="sub">How long a dollar is tied up in operations, before and after the working capital changes.</p>
+  </header>
+
+  <main>
+    <p id="status" class="status" role="status">Loading data/electromart.csv and data/assumptions.csv…</p>
+
+    <section id="days-section" class="card" hidden>
+      <h2>Days</h2>
+      <table class="num">
+        <thead>
+          <tr><th scope="col">Measure</th><th scope="col">Before</th><th scope="col">After</th><th scope="col">Change</th></tr>
+        </thead>
+        <tbody id="days-body"></tbody>
+      </table>
+      <p class="note">CCC = DIO + DSO − DPO. Uses a <span id="days-in-year"></span>-day year from data/assumptions.csv.</p>
+      <dl class="defs">
+        <dt>DIO</dt><dd>Days inventory outstanding = Inventory / COGS × days in year</dd>
+        <dt>DSO</dt><dd>Days sales outstanding = Accounts receivable / Revenue × days in year</dd>
+        <dt>DPO</dt><dd>Days payables outstanding = Accounts payable / COGS × days in year</dd>
+      </dl>
+    </section>
+
+    <section id="cash-section" class="card" hidden>
+      <h2>Cash freed by each lever</h2>
+      <table class="num">
+        <thead>
+          <tr><th scope="col">Lever</th><th scope="col">Before</th><th scope="col">After</th><th scope="col">Cash freed</th></tr>
+        </thead>
+        <tbody id="cash-body"></tbody>
+        <tfoot id="cash-foot"></tfoot>
+      </table>
+      <p class="note">A drop in inventory or receivables frees cash. A rise in accounts payable frees cash.</p>
+      <h3>Check from the days</h3>
+      <ul id="cash-checks" class="checks"></ul>
+    </section>
+
+    <section id="levers-section" class="card" hidden>
+      <h2>Levers</h2>
+      <p class="note top-note">Move a slider to change the days. Revenue and COGS stay at their Before values.</p>
+
+      <div class="buttons">
+        <button type="button" id="set-before">Set to Before</button>
+        <button type="button" id="set-after">Set to After</button>
+      </div>
+
+      <div class="slider">
+        <label for="dio-slider">DIO <span class="hint">inventory days</span></label>
+        <output id="dio-value" for="dio-slider"></output>
+        <input type="range" id="dio-slider" min="0" step="any">
+      </div>
+      <div class="slider">
+        <label for="dso-slider">DSO <span class="hint">collection days</span></label>
+        <output id="dso-value" for="dso-slider"></output>
+        <input type="range" id="dso-slider" min="0" step="any">
+      </div>
+      <div class="slider">
+        <label for="dpo-slider">DPO <span class="hint">payment days</span></label>
+        <output id="dpo-value" for="dpo-slider"></output>
+        <input type="range" id="dpo-slider" min="0" step="any">
+      </div>
+
+      <h3>1. Cash conversion cycle</h3>
+      <table class="num">
+        <thead>
+          <tr><th scope="col">Measure</th><th scope="col">Before</th><th scope="col">Levers</th><th scope="col">Change</th></tr>
+        </thead>
+        <tbody id="lever-days-body"></tbody>
+      </table>
+
+      <h3>2–3. Balances and cash freed</h3>
+      <table class="num">
+        <thead>
+          <tr><th scope="col">Balance</th><th scope="col">Before</th><th scope="col">Implied</th><th scope="col">Cash freed</th></tr>
+        </thead>
+        <tbody id="lever-cash-body"></tbody>
+        <tfoot id="lever-cash-foot"></tfoot>
+      </table>
+      <p class="note">Implied balance = days × annual COGS (or revenue) / <span class="diy"></span>. Cash freed compares it with Before.</p>
+
+      <h3>4. Interest saved on the bank line</h3>
+      <table class="num">
+        <tbody id="lever-interest-body"></tbody>
+      </table>
+      <p class="note">Assumes every freed dollar pays down the bank line, up to its Before balance. The case's After balance sheet shows ElectroMart kept part of the cash instead. A negative number means extra borrowing and extra interest.</p>
+
+      <h3>5. Paying suppliers</h3>
+      <table class="num">
+        <thead>
+          <tr><th scope="col">Measure</th><th scope="col">Before</th><th scope="col">Levers</th></tr>
+        </thead>
+        <tbody id="lever-supplier-body"></tbody>
+      </table>
+      <p class="note" id="terms-note"></p>
+    </section>
+
+    <details id="data-section" class="card" hidden>
+      <summary>Data read from the CSV files</summary>
+      <table class="num">
+        <thead>
+          <tr><th scope="col">Line</th><th scope="col">Before</th><th scope="col">After</th></tr>
+        </thead>
+        <tbody id="data-body"></tbody>
+      </table>
+    </details>
+  </main>
+
+  <script src="ccc.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
